@@ -56,6 +56,7 @@ export default function Home() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState("");
   const [draggedId, setDraggedId] = useState<number | null>(null);
+  const [dropTargetId, setDropTargetId] = useState<number | null>(null);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -180,6 +181,7 @@ export default function Home() {
     });
 
     setDraggedId(null);
+    setDropTargetId(null);
   }
 
   return (
@@ -301,147 +303,183 @@ export default function Home() {
             </button>
           </div>
 
+          {filter === "all" && (
+            <div className="rounded-2xl border border-dashed border-cyan-400/20 bg-cyan-400/5 px-4 py-3 text-sm text-cyan-100">
+              Drag tasks by the dotted handle <span className="font-semibold">⋮⋮</span>{" "}
+              to reorder them.
+            </div>
+          )}
+
           <div className="flex flex-col gap-4">
             {visibleTodos.length === 0 ? (
               <div className="rounded-[28px] border border-dashed border-white/10 bg-white/5 p-8 text-center text-slate-400">
                 No tasks in this view.
               </div>
             ) : (
-              visibleTodos.map((todo) => (
-                <article
-                  key={todo.id}
-                  draggable={filter === "all"}
-                  onDragStart={() => setDraggedId(todo.id)}
-                  onDragOver={(event) => event.preventDefault()}
-                  onDrop={() => handleDrop(todo.id)}
-                  onDragEnd={() => setDraggedId(null)}
-                  className={`flex flex-col gap-4 rounded-[28px] border border-white/10 bg-white/10 p-5 shadow-lg shadow-black/20 backdrop-blur-md transition ${
-                    draggedId === todo.id ? "opacity-60" : "opacity-100"
-                  }`}
-                >
-                  <div className="flex items-start gap-4">
-                    <button
-                      type="button"
-                      aria-label={`Toggle ${todo.text}`}
-                      onClick={() => toggleTodo(todo.id)}
-                      className={`mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${
-                        todo.done
-                          ? "border-emerald-300 bg-emerald-300 text-slate-950"
-                          : "border-slate-500 bg-transparent text-transparent"
-                      }`}
-                    >
-                      ✓
-                    </button>
+              visibleTodos.map((todo) => {
+                const isDragged = draggedId === todo.id;
+                const isDropTarget = dropTargetId === todo.id && draggedId !== todo.id;
 
-                    <div className="flex-1">
-                      {editingId === todo.id ? (
-                        <div className="flex flex-col gap-3">
-                          <input
-                            value={editingText}
-                            onChange={(event) => setEditingText(event.target.value)}
-                            className="h-12 rounded-2xl border border-cyan-400 bg-white/5 px-4 text-base outline-none"
-                          />
-                          <div className="flex gap-2">
-                            <button
-                              type="button"
-                              onClick={() => saveEditing(todo.id)}
-                              className="rounded-xl bg-cyan-400 px-4 py-2 text-sm font-medium text-slate-950"
-                            >
-                              Save
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setEditingId(null);
-                                setEditingText("");
-                              }}
-                              className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300"
-                            >
-                              Cancel
-                            </button>
+                return (
+                  <article
+                    key={todo.id}
+                    draggable={filter === "all"}
+                    onDragStart={() => setDraggedId(todo.id)}
+                    onDragOver={(event) => {
+                      event.preventDefault();
+                      if (filter === "all") setDropTargetId(todo.id);
+                    }}
+                    onDragLeave={() => {
+                      if (dropTargetId === todo.id) setDropTargetId(null);
+                    }}
+                    onDrop={() => handleDrop(todo.id)}
+                    onDragEnd={() => {
+                      setDraggedId(null);
+                      setDropTargetId(null);
+                    }}
+                    className={`flex flex-col gap-4 rounded-[28px] border p-5 shadow-lg shadow-black/20 backdrop-blur-md transition ${
+                      isDragged
+                        ? "border-cyan-300/60 bg-cyan-300/10 opacity-60 scale-[0.99]"
+                        : isDropTarget
+                          ? "border-cyan-300 bg-cyan-300/10 ring-2 ring-cyan-300/40"
+                          : "border-white/10 bg-white/10 opacity-100"
+                    }`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div
+                        className={`mt-1 rounded-xl border border-dashed px-2 py-1 text-sm tracking-widest ${
+                          filter === "all"
+                            ? "cursor-grab border-cyan-400/40 bg-cyan-400/10 text-cyan-200 active:cursor-grabbing"
+                            : "border-white/10 text-slate-500"
+                        }`}
+                        title="Drag to reorder"
+                      >
+                        ⋮⋮
+                      </div>
+
+                      <button
+                        type="button"
+                        aria-label={`Toggle ${todo.text}`}
+                        onClick={() => toggleTodo(todo.id)}
+                        className={`mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${
+                          todo.done
+                            ? "border-emerald-300 bg-emerald-300 text-slate-950"
+                            : "border-slate-500 bg-transparent text-transparent"
+                        }`}
+                      >
+                        ✓
+                      </button>
+
+                      <div className="flex-1">
+                        {editingId === todo.id ? (
+                          <div className="flex flex-col gap-3">
+                            <input
+                              value={editingText}
+                              onChange={(event) => setEditingText(event.target.value)}
+                              className="h-12 rounded-2xl border border-cyan-400 bg-white/5 px-4 text-base outline-none"
+                            />
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                onClick={() => saveEditing(todo.id)}
+                                className="rounded-xl bg-cyan-400 px-4 py-2 text-sm font-medium text-slate-950"
+                              >
+                                Save
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingId(null);
+                                  setEditingText("");
+                                }}
+                                className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300"
+                              >
+                                Cancel
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      ) : (
-                        <>
-                          <p
-                            className={`text-lg transition ${
-                              todo.done
-                                ? "text-slate-400 line-through"
-                                : "text-white"
-                            }`}
-                          >
-                            {todo.text}
-                          </p>
-
-                          <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-                            <span
-                              className={`rounded-full border px-3 py-1 capitalize ${priorityStyles[todo.priority]}`}
+                        ) : (
+                          <>
+                            <p
+                              className={`text-lg transition ${
+                                todo.done
+                                  ? "text-slate-400 line-through"
+                                  : "text-white"
+                              }`}
                             >
-                              {todo.priority}
-                            </span>
-                            <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-slate-300">
-                              {todo.dueDate ? `Due: ${todo.dueDate}` : "No deadline"}
-                            </span>
-                            {filter === "all" && (
-                              <span className="rounded-full border border-dashed border-white/10 px-3 py-1 text-slate-400">
-                                Drag to reorder
+                              {todo.text}
+                            </p>
+
+                            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+                              <span
+                                className={`rounded-full border px-3 py-1 capitalize ${priorityStyles[todo.priority]}`}
+                              >
+                                {todo.priority}
                               </span>
-                            )}
-                          </div>
-                        </>
-                      )}
+                              <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-slate-300">
+                                {todo.dueDate ? `Due: ${todo.dueDate}` : "No deadline"}
+                              </span>
+                              {filter === "all" && (
+                                <span className="rounded-full border border-dashed border-white/10 px-3 py-1 text-slate-400">
+                                  Drag to reorder
+                                </span>
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        <button
+                          type="button"
+                          onClick={() => startEditing(todo)}
+                          className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-cyan-400 hover:text-cyan-300"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeTodo(todo.id)}
+                          className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-red-400 hover:text-red-300"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="flex flex-col gap-2 sm:flex-row">
-                      <button
-                        type="button"
-                        onClick={() => startEditing(todo)}
-                        className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-cyan-400 hover:text-cyan-300"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => removeTodo(todo.id)}
-                        className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-red-400 hover:text-red-300"
-                      >
-                        Delete
-                      </button>
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <label className="flex flex-col gap-2 text-sm text-slate-300">
+                        Deadline
+                        <input
+                          type="date"
+                          value={todo.dueDate}
+                          onChange={(event) =>
+                            updateDueDate(todo.id, event.target.value)
+                          }
+                          className="h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-base outline-none focus:border-cyan-400"
+                        />
+                      </label>
+
+                      <label className="flex flex-col gap-2 text-sm text-slate-300">
+                        Priority
+                        <select
+                          value={todo.priority}
+                          onChange={(event) =>
+                            updatePriority(todo.id, event.target.value as Priority)
+                          }
+                          className="h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-base outline-none focus:border-cyan-400"
+                        >
+                          {priorities.map((item) => (
+                            <option key={item} value={item} className="bg-slate-900">
+                              {item}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
                     </div>
-                  </div>
-
-                  <div className="grid gap-3 md:grid-cols-2">
-                    <label className="flex flex-col gap-2 text-sm text-slate-300">
-                      Deadline
-                      <input
-                        type="date"
-                        value={todo.dueDate}
-                        onChange={(event) =>
-                          updateDueDate(todo.id, event.target.value)
-                        }
-                        className="h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-base outline-none focus:border-cyan-400"
-                      />
-                    </label>
-
-                    <label className="flex flex-col gap-2 text-sm text-slate-300">
-                      Priority
-                      <select
-                        value={todo.priority}
-                        onChange={(event) =>
-                          updatePriority(todo.id, event.target.value as Priority)
-                        }
-                        className="h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-base outline-none focus:border-cyan-400"
-                      >
-                        {priorities.map((item) => (
-                          <option key={item} value={item} className="bg-slate-900">
-                            {item}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                </article>
-              ))
+                  </article>
+                );
+              })
             )}
           </div>
         </section>
