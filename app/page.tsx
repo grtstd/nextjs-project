@@ -41,10 +41,10 @@ const filters: Filter[] = ["all", "active", "completed"];
 const priorities: Priority[] = ["low", "medium", "high"];
 const STORAGE_KEY = "nextjs-todo-items";
 
-const priorityStyles: Record<Priority, string> = {
-  low: "bg-sky-400/15 text-sky-200 border-sky-400/30",
-  medium: "bg-amber-400/15 text-amber-200 border-amber-400/30",
-  high: "bg-rose-400/15 text-rose-200 border-rose-400/30",
+const priorityBadge: Record<Priority, string> = {
+  low: "badge-info",
+  medium: "badge-warning",
+  high: "badge-error",
 };
 
 export default function Home() {
@@ -185,304 +185,291 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#1e293b,_#0f172a_55%,_#020617)] px-6 py-10 text-white">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
-        <section className="rounded-[32px] border border-white/10 bg-white/10 p-8 shadow-2xl shadow-black/30 backdrop-blur-md">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <main className="min-h-screen bg-base-200 p-6 md:p-10">
+      <div className="mx-auto flex max-w-5xl flex-col gap-6">
+        <div className="hero rounded-box bg-base-100 shadow-xl">
+          <div className="hero-content w-full flex-col items-start gap-6 p-8 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="mb-2 text-sm uppercase tracking-[0.3em] text-cyan-300/80">
-                Next.js Todo
-              </p>
-              <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
+              <div className="badge badge-primary badge-outline mb-3">Next.js Todo</div>
+              <h1 className="text-4xl font-bold md:text-5xl">
                 Keep your day under control.
               </h1>
-              <p className="mt-3 max-w-2xl text-base text-slate-300 md:text-lg">
-                Tasks now support editing, deadlines, priority labels, and
-                drag-and-drop reordering.
+              <p className="mt-3 max-w-2xl text-base-content/70">
+                Now styled with daisyUI, plus editing, deadlines, priorities,
+                drag-and-drop, filters, and saved state.
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 text-center text-sm">
-              <div className="rounded-2xl bg-black/20 px-4 py-3">
-                <div className="text-2xl font-semibold">{stats.total}</div>
-                <div className="text-slate-300">total</div>
+            <div className="stats stats-vertical w-full shadow md:stats-horizontal md:w-auto">
+              <div className="stat">
+                <div className="stat-title">Total</div>
+                <div className="stat-value text-primary">{stats.total}</div>
               </div>
-              <div className="rounded-2xl bg-black/20 px-4 py-3">
-                <div className="text-2xl font-semibold text-emerald-300">
-                  {stats.done}
-                </div>
-                <div className="text-slate-300">done</div>
+              <div className="stat">
+                <div className="stat-title">Done</div>
+                <div className="stat-value text-success">{stats.done}</div>
               </div>
-              <div className="rounded-2xl bg-black/20 px-4 py-3">
-                <div className="text-2xl font-semibold text-amber-300">
-                  {stats.left}
-                </div>
-                <div className="text-slate-300">left</div>
+              <div className="stat">
+                <div className="stat-title">Left</div>
+                <div className="stat-value text-warning">{stats.left}</div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
-        <section className="rounded-[32px] border border-white/10 bg-slate-950/70 p-6 shadow-xl shadow-black/20 backdrop-blur-md">
-          <form className="flex flex-col gap-3" onSubmit={addTodo}>
-            <div className="flex flex-col gap-3 md:flex-row">
-              <input
-                value={input}
-                onChange={(event) => setInput(event.target.value)}
-                placeholder="Add a task..."
-                className="h-14 flex-1 rounded-2xl border border-white/10 bg-white/5 px-5 text-base outline-none ring-0 placeholder:text-slate-500 focus:border-cyan-400"
-              />
-              <button
-                type="submit"
-                className="h-14 rounded-2xl bg-cyan-400 px-6 font-semibold text-slate-950 transition hover:bg-cyan-300"
-              >
-                Add todo
-              </button>
-            </div>
-
-            <div className="grid gap-3 md:grid-cols-2">
-              <label className="flex flex-col gap-2 text-sm text-slate-300">
-                Deadline
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body gap-4">
+            <form className="flex flex-col gap-3" onSubmit={addTodo}>
+              <div className="flex flex-col gap-3 lg:flex-row">
                 <input
-                  type="date"
-                  value={dueDate}
-                  onChange={(event) => setDueDate(event.target.value)}
-                  className="h-12 rounded-2xl border border-white/10 bg-white/5 px-4 text-base outline-none focus:border-cyan-400"
+                  value={input}
+                  onChange={(event) => setInput(event.target.value)}
+                  placeholder="Add a task..."
+                  className="input input-bordered input-lg w-full flex-1"
                 />
-              </label>
+                <button type="submit" className="btn btn-primary btn-lg">
+                  Add todo
+                </button>
+              </div>
 
-              <label className="flex flex-col gap-2 text-sm text-slate-300">
-                Priority
-                <select
-                  value={priority}
-                  onChange={(event) => setPriority(event.target.value as Priority)}
-                  className="h-12 rounded-2xl border border-white/10 bg-white/5 px-4 text-base outline-none focus:border-cyan-400"
-                >
-                  {priorities.map((item) => (
-                    <option key={item} value={item} className="bg-slate-900">
-                      {item}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <div className="grid gap-3 md:grid-cols-2">
+                <label className="form-control w-full">
+                  <div className="label">
+                    <span className="label-text">Deadline</span>
+                  </div>
+                  <input
+                    type="date"
+                    value={dueDate}
+                    onChange={(event) => setDueDate(event.target.value)}
+                    className="input input-bordered w-full"
+                  />
+                </label>
+
+                <label className="form-control w-full">
+                  <div className="label">
+                    <span className="label-text">Priority</span>
+                  </div>
+                  <select
+                    value={priority}
+                    onChange={(event) => setPriority(event.target.value as Priority)}
+                    className="select select-bordered w-full"
+                  >
+                    {priorities.map((item) => (
+                      <option key={item} value={item}>
+                        {item}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </form>
+
+            <div className="alert alert-info alert-soft">
+              <span>Your tasks are saved in the browser automatically.</span>
             </div>
-          </form>
-          <p className="mt-3 text-sm text-slate-400">
-            Your tasks are saved in the browser automatically.
-          </p>
-        </section>
+          </div>
+        </div>
 
-        <section className="flex flex-col gap-4 rounded-[32px] border border-white/10 bg-slate-950/50 p-5 shadow-xl shadow-black/20 backdrop-blur-md">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-wrap gap-2">
-              {filters.map((item) => {
-                const active = filter === item;
-                return (
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body gap-4">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div className="join join-horizontal flex flex-wrap">
+                {filters.map((item) => (
                   <button
                     key={item}
                     type="button"
                     onClick={() => setFilter(item)}
-                    className={`rounded-full px-4 py-2 text-sm font-medium capitalize transition ${
-                      active
-                        ? "bg-cyan-400 text-slate-950"
-                        : "bg-white/5 text-slate-300 hover:bg-white/10"
+                    className={`btn join-item capitalize ${
+                      filter === item ? "btn-primary" : "btn-ghost"
                     }`}
                   >
                     {item}
                   </button>
-                );
-              })}
-            </div>
-
-            <button
-              type="button"
-              onClick={clearCompleted}
-              className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-red-400 hover:text-red-300"
-            >
-              Clear completed
-            </button>
-          </div>
-
-          {filter === "all" && (
-            <div className="rounded-2xl border border-dashed border-cyan-400/20 bg-cyan-400/5 px-4 py-3 text-sm text-cyan-100">
-              Drag tasks by the dotted handle <span className="font-semibold">⋮⋮</span>{" "}
-              to reorder them.
-            </div>
-          )}
-
-          <div className="flex flex-col gap-4">
-            {visibleTodos.length === 0 ? (
-              <div className="rounded-[28px] border border-dashed border-white/10 bg-white/5 p-8 text-center text-slate-400">
-                No tasks in this view.
+                ))}
               </div>
-            ) : (
-              visibleTodos.map((todo) => {
-                const isDragged = draggedId === todo.id;
-                const isDropTarget = dropTargetId === todo.id && draggedId !== todo.id;
 
-                return (
-                  <article
-                    key={todo.id}
-                    draggable={filter === "all"}
-                    onDragStart={() => setDraggedId(todo.id)}
-                    onDragOver={(event) => {
-                      event.preventDefault();
-                      if (filter === "all") setDropTargetId(todo.id);
-                    }}
-                    onDragLeave={() => {
-                      if (dropTargetId === todo.id) setDropTargetId(null);
-                    }}
-                    onDrop={() => handleDrop(todo.id)}
-                    onDragEnd={() => {
-                      setDraggedId(null);
-                      setDropTargetId(null);
-                    }}
-                    className={`flex flex-col gap-4 rounded-[28px] border p-5 shadow-lg shadow-black/20 backdrop-blur-md transition ${
-                      isDragged
-                        ? "border-cyan-300/60 bg-cyan-300/10 opacity-60 scale-[0.99]"
-                        : isDropTarget
-                          ? "border-cyan-300 bg-cyan-300/10 ring-2 ring-cyan-300/40"
-                          : "border-white/10 bg-white/10 opacity-100"
-                    }`}
-                  >
-                    <div className="flex items-start gap-4">
-                      <div
-                        className={`mt-1 rounded-xl border border-dashed px-2 py-1 text-sm tracking-widest ${
-                          filter === "all"
-                            ? "cursor-grab border-cyan-400/40 bg-cyan-400/10 text-cyan-200 active:cursor-grabbing"
-                            : "border-white/10 text-slate-500"
-                        }`}
-                        title="Drag to reorder"
-                      >
-                        ⋮⋮
-                      </div>
+              <button type="button" onClick={clearCompleted} className="btn btn-outline btn-error">
+                Clear completed
+              </button>
+            </div>
 
-                      <button
-                        type="button"
-                        aria-label={`Toggle ${todo.text}`}
-                        onClick={() => toggleTodo(todo.id)}
-                        className={`mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${
-                          todo.done
-                            ? "border-emerald-300 bg-emerald-300 text-slate-950"
-                            : "border-slate-500 bg-transparent text-transparent"
-                        }`}
-                      >
-                        ✓
-                      </button>
-
-                      <div className="flex-1">
-                        {editingId === todo.id ? (
-                          <div className="flex flex-col gap-3">
-                            <input
-                              value={editingText}
-                              onChange={(event) => setEditingText(event.target.value)}
-                              className="h-12 rounded-2xl border border-cyan-400 bg-white/5 px-4 text-base outline-none"
-                            />
-                            <div className="flex gap-2">
-                              <button
-                                type="button"
-                                onClick={() => saveEditing(todo.id)}
-                                className="rounded-xl bg-cyan-400 px-4 py-2 text-sm font-medium text-slate-950"
-                              >
-                                Save
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setEditingId(null);
-                                  setEditingText("");
-                                }}
-                                className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300"
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <p
-                              className={`text-lg transition ${
-                                todo.done
-                                  ? "text-slate-400 line-through"
-                                  : "text-white"
-                              }`}
-                            >
-                              {todo.text}
-                            </p>
-
-                            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-                              <span
-                                className={`rounded-full border px-3 py-1 capitalize ${priorityStyles[todo.priority]}`}
-                              >
-                                {todo.priority}
-                              </span>
-                              <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-slate-300">
-                                {todo.dueDate ? `Due: ${todo.dueDate}` : "No deadline"}
-                              </span>
-                              {filter === "all" && (
-                                <span className="rounded-full border border-dashed border-white/10 px-3 py-1 text-slate-400">
-                                  Drag to reorder
-                                </span>
-                              )}
-                            </div>
-                          </>
-                        )}
-                      </div>
-
-                      <div className="flex flex-col gap-2 sm:flex-row">
-                        <button
-                          type="button"
-                          onClick={() => startEditing(todo)}
-                          className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-cyan-400 hover:text-cyan-300"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => removeTodo(todo.id)}
-                          className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-red-400 hover:text-red-300"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="grid gap-3 md:grid-cols-2">
-                      <label className="flex flex-col gap-2 text-sm text-slate-300">
-                        Deadline
-                        <input
-                          type="date"
-                          value={todo.dueDate}
-                          onChange={(event) =>
-                            updateDueDate(todo.id, event.target.value)
-                          }
-                          className="h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-base outline-none focus:border-cyan-400"
-                        />
-                      </label>
-
-                      <label className="flex flex-col gap-2 text-sm text-slate-300">
-                        Priority
-                        <select
-                          value={todo.priority}
-                          onChange={(event) =>
-                            updatePriority(todo.id, event.target.value as Priority)
-                          }
-                          className="h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-base outline-none focus:border-cyan-400"
-                        >
-                          {priorities.map((item) => (
-                            <option key={item} value={item} className="bg-slate-900">
-                              {item}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                    </div>
-                  </article>
-                );
-              })
+            {filter === "all" && (
+              <div className="alert alert-warning alert-soft">
+                <span>
+                  Drag tasks by the dotted handle <strong>⋮⋮</strong> to reorder them.
+                </span>
+              </div>
             )}
+
+            <div className="flex flex-col gap-4">
+              {visibleTodos.length === 0 ? (
+                <div className="card border border-dashed border-base-300 bg-base-200/50">
+                  <div className="card-body items-center text-center text-base-content/60">
+                    No tasks in this view.
+                  </div>
+                </div>
+              ) : (
+                visibleTodos.map((todo) => {
+                  const isDragged = draggedId === todo.id;
+                  const isDropTarget = dropTargetId === todo.id && draggedId !== todo.id;
+
+                  return (
+                    <div
+                      key={todo.id}
+                      draggable={filter === "all"}
+                      onDragStart={() => setDraggedId(todo.id)}
+                      onDragOver={(event) => {
+                        event.preventDefault();
+                        if (filter === "all") setDropTargetId(todo.id);
+                      }}
+                      onDragLeave={() => {
+                        if (dropTargetId === todo.id) setDropTargetId(null);
+                      }}
+                      onDrop={() => handleDrop(todo.id)}
+                      onDragEnd={() => {
+                        setDraggedId(null);
+                        setDropTargetId(null);
+                      }}
+                      className={`card border bg-base-100 transition-all ${
+                        isDragged
+                          ? "scale-[0.99] opacity-60 border-primary"
+                          : isDropTarget
+                            ? "border-primary ring-2 ring-primary/30"
+                            : "border-base-300"
+                      }`}
+                    >
+                      <div className="card-body gap-4">
+                        <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
+                          <div
+                            className={`rounded-btn border border-dashed px-3 py-2 text-lg ${
+                              filter === "all"
+                                ? "cursor-grab border-primary/40 text-primary"
+                                : "text-base-content/30"
+                            }`}
+                            title="Drag to reorder"
+                          >
+                            ⋮⋮
+                          </div>
+
+                          <input
+                            type="checkbox"
+                            checked={todo.done}
+                            onChange={() => toggleTodo(todo.id)}
+                            className="checkbox checkbox-success mt-1"
+                          />
+
+                          <div className="flex-1">
+                            {editingId === todo.id ? (
+                              <div className="flex flex-col gap-3">
+                                <input
+                                  value={editingText}
+                                  onChange={(event) => setEditingText(event.target.value)}
+                                  className="input input-bordered input-primary w-full"
+                                />
+                                <div className="flex flex-wrap gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => saveEditing(todo.id)}
+                                    className="btn btn-primary"
+                                  >
+                                    Save
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditingId(null);
+                                      setEditingText("");
+                                    }}
+                                    className="btn btn-ghost"
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                <h2
+                                  className={`card-title ${
+                                    todo.done ? "text-base-content/50 line-through" : ""
+                                  }`}
+                                >
+                                  {todo.text}
+                                </h2>
+                                <div className="mt-3 flex flex-wrap gap-2">
+                                  <div className={`badge ${priorityBadge[todo.priority]} badge-outline`}>
+                                    {todo.priority}
+                                  </div>
+                                  <div className="badge badge-outline">
+                                    {todo.dueDate ? `Due: ${todo.dueDate}` : "No deadline"}
+                                  </div>
+                                  {filter === "all" && (
+                                    <div className="badge badge-outline badge-primary">
+                                      Drag to reorder
+                                    </div>
+                                  )}
+                                </div>
+                              </>
+                            )}
+                          </div>
+
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              type="button"
+                              onClick={() => startEditing(todo)}
+                              className="btn btn-outline btn-info"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => removeTodo(todo.id)}
+                              className="btn btn-outline btn-error"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="grid gap-3 md:grid-cols-2">
+                          <label className="form-control w-full">
+                            <div className="label">
+                              <span className="label-text">Deadline</span>
+                            </div>
+                            <input
+                              type="date"
+                              value={todo.dueDate}
+                              onChange={(event) => updateDueDate(todo.id, event.target.value)}
+                              className="input input-bordered w-full"
+                            />
+                          </label>
+
+                          <label className="form-control w-full">
+                            <div className="label">
+                              <span className="label-text">Priority</span>
+                            </div>
+                            <select
+                              value={todo.priority}
+                              onChange={(event) =>
+                                updatePriority(todo.id, event.target.value as Priority)
+                              }
+                              className="select select-bordered w-full"
+                            >
+                              {priorities.map((item) => (
+                                <option key={item} value={item}>
+                                  {item}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
-        </section>
+        </div>
       </div>
     </main>
   );
