@@ -185,57 +185,57 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-base-200 p-6 md:p-10">
-      <div className="mx-auto flex max-w-5xl flex-col gap-6">
-        <div className="hero rounded-box bg-base-100 shadow-xl">
-          <div className="hero-content w-full flex-col items-start gap-6 p-8 lg:flex-row lg:items-end lg:justify-between">
+    <main className="min-h-screen bg-base-200 px-3 py-4 md:px-6 md:py-6">
+      <div className="mx-auto flex max-w-4xl flex-col gap-4">
+        <div className="rounded-box bg-base-100 shadow-lg">
+          <div className="flex flex-col gap-4 p-4 md:flex-row md:items-end md:justify-between md:p-5">
             <div>
-              <div className="badge badge-primary badge-outline mb-3">Next.js Todo</div>
-              <h1 className="text-4xl font-bold md:text-5xl">
+              <div className="badge badge-primary badge-outline mb-2">Next.js Todo</div>
+              <h1 className="text-2xl font-bold md:text-3xl">
                 Keep your day under control.
               </h1>
-              <p className="mt-3 max-w-2xl text-base-content/70">
-                Now styled with daisyUI, plus editing, deadlines, priorities,
-                drag-and-drop, filters, and saved state.
+              <p className="mt-2 max-w-2xl text-sm text-base-content/70 md:text-base">
+                daisyUI todo with editing, deadlines, priorities, filters,
+                drag-and-drop, and saved state.
               </p>
             </div>
 
-            <div className="stats stats-vertical w-full shadow md:stats-horizontal md:w-auto">
-              <div className="stat">
-                <div className="stat-title">Total</div>
-                <div className="stat-value text-primary">{stats.total}</div>
+            <div className="stats stats-horizontal w-full shadow md:w-auto">
+              <div className="stat px-4 py-3">
+                <div className="stat-title text-xs">Total</div>
+                <div className="stat-value text-2xl text-primary">{stats.total}</div>
               </div>
-              <div className="stat">
-                <div className="stat-title">Done</div>
-                <div className="stat-value text-success">{stats.done}</div>
+              <div className="stat px-4 py-3">
+                <div className="stat-title text-xs">Done</div>
+                <div className="stat-value text-2xl text-success">{stats.done}</div>
               </div>
-              <div className="stat">
-                <div className="stat-title">Left</div>
-                <div className="stat-value text-warning">{stats.left}</div>
+              <div className="stat px-4 py-3">
+                <div className="stat-title text-xs">Left</div>
+                <div className="stat-value text-2xl text-warning">{stats.left}</div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body gap-4">
+        <div className="card bg-base-100 shadow-lg">
+          <div className="card-body gap-3 p-4">
             <form className="flex flex-col gap-3" onSubmit={addTodo}>
-              <div className="flex flex-col gap-3 lg:flex-row">
+              <div className="flex flex-col gap-2 md:flex-row">
                 <input
                   value={input}
                   onChange={(event) => setInput(event.target.value)}
                   placeholder="Add a task..."
-                  className="input input-bordered input-lg w-full flex-1"
+                  className="input input-bordered w-full flex-1"
                 />
-                <button type="submit" className="btn btn-primary btn-lg">
-                  Add todo
+                <button type="submit" className="btn btn-primary">
+                  Add
                 </button>
               </div>
 
-              <div className="grid gap-3 md:grid-cols-2">
+              <div className="grid gap-2 md:grid-cols-2">
                 <label className="form-control w-full">
-                  <div className="label">
-                    <span className="label-text">Deadline</span>
+                  <div className="label py-1">
+                    <span className="label-text text-xs">Deadline</span>
                   </div>
                   <input
                     type="date"
@@ -246,8 +246,8 @@ export default function Home() {
                 </label>
 
                 <label className="form-control w-full">
-                  <div className="label">
-                    <span className="label-text">Priority</span>
+                  <div className="label py-1">
+                    <span className="label-text text-xs">Priority</span>
                   </div>
                   <select
                     value={priority}
@@ -264,22 +264,22 @@ export default function Home() {
               </div>
             </form>
 
-            <div className="alert alert-info alert-soft">
+            <div className="alert alert-info alert-soft py-2 text-sm">
               <span>Your tasks are saved in the browser automatically.</span>
             </div>
           </div>
         </div>
 
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body gap-4">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="card bg-base-100 shadow-lg">
+          <div className="card-body gap-3 p-4">
+            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
               <div className="join join-horizontal flex flex-wrap">
                 {filters.map((item) => (
                   <button
                     key={item}
                     type="button"
                     onClick={() => setFilter(item)}
-                    className={`btn join-item capitalize ${
+                    className={`btn btn-sm join-item capitalize ${
                       filter === item ? "btn-primary" : "btn-ghost"
                     }`}
                   >
@@ -288,30 +288,35 @@ export default function Home() {
                 ))}
               </div>
 
-              <button type="button" onClick={clearCompleted} className="btn btn-outline btn-error">
+              <button
+                type="button"
+                onClick={clearCompleted}
+                className="btn btn-sm btn-outline btn-error"
+              >
                 Clear completed
               </button>
             </div>
 
             {filter === "all" && (
-              <div className="alert alert-warning alert-soft">
+              <div className="alert alert-warning alert-soft py-2 text-sm">
                 <span>
-                  Drag tasks by the dotted handle <strong>⋮⋮</strong> to reorder them.
+                  Drag by <strong>⋮⋮</strong> to reorder.
                 </span>
               </div>
             )}
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               {visibleTodos.length === 0 ? (
                 <div className="card border border-dashed border-base-300 bg-base-200/50">
-                  <div className="card-body items-center text-center text-base-content/60">
+                  <div className="card-body items-center py-6 text-center text-sm text-base-content/60">
                     No tasks in this view.
                   </div>
                 </div>
               ) : (
                 visibleTodos.map((todo) => {
                   const isDragged = draggedId === todo.id;
-                  const isDropTarget = dropTargetId === todo.id && draggedId !== todo.id;
+                  const isDropTarget =
+                    dropTargetId === todo.id && draggedId !== todo.id;
 
                   return (
                     <div
@@ -338,10 +343,10 @@ export default function Home() {
                             : "border-base-300"
                       }`}
                     >
-                      <div className="card-body gap-4">
-                        <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
+                      <div className="card-body gap-3 p-4">
+                        <div className="flex flex-col gap-3 md:flex-row md:items-start">
                           <div
-                            className={`rounded-btn border border-dashed px-3 py-2 text-lg ${
+                            className={`rounded-btn border border-dashed px-2 py-1 text-base leading-none ${
                               filter === "all"
                                 ? "cursor-grab border-primary/40 text-primary"
                                 : "text-base-content/30"
@@ -355,22 +360,24 @@ export default function Home() {
                             type="checkbox"
                             checked={todo.done}
                             onChange={() => toggleTodo(todo.id)}
-                            className="checkbox checkbox-success mt-1"
+                            className="checkbox checkbox-success checkbox-sm mt-1"
                           />
 
                           <div className="flex-1">
                             {editingId === todo.id ? (
-                              <div className="flex flex-col gap-3">
+                              <div className="flex flex-col gap-2">
                                 <input
                                   value={editingText}
-                                  onChange={(event) => setEditingText(event.target.value)}
-                                  className="input input-bordered input-primary w-full"
+                                  onChange={(event) =>
+                                    setEditingText(event.target.value)
+                                  }
+                                  className="input input-bordered input-primary input-sm w-full"
                                 />
                                 <div className="flex flex-wrap gap-2">
                                   <button
                                     type="button"
                                     onClick={() => saveEditing(todo.id)}
-                                    className="btn btn-primary"
+                                    className="btn btn-primary btn-sm"
                                   >
                                     Save
                                   </button>
@@ -380,7 +387,7 @@ export default function Home() {
                                       setEditingId(null);
                                       setEditingText("");
                                     }}
-                                    className="btn btn-ghost"
+                                    className="btn btn-ghost btn-sm"
                                   >
                                     Cancel
                                   </button>
@@ -389,22 +396,28 @@ export default function Home() {
                             ) : (
                               <>
                                 <h2
-                                  className={`card-title ${
-                                    todo.done ? "text-base-content/50 line-through" : ""
+                                  className={`text-base font-semibold ${
+                                    todo.done
+                                      ? "text-base-content/50 line-through"
+                                      : ""
                                   }`}
                                 >
                                   {todo.text}
                                 </h2>
-                                <div className="mt-3 flex flex-wrap gap-2">
-                                  <div className={`badge ${priorityBadge[todo.priority]} badge-outline`}>
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                  <div
+                                    className={`badge badge-sm ${priorityBadge[todo.priority]} badge-outline`}
+                                  >
                                     {todo.priority}
                                   </div>
-                                  <div className="badge badge-outline">
-                                    {todo.dueDate ? `Due: ${todo.dueDate}` : "No deadline"}
+                                  <div className="badge badge-sm badge-outline">
+                                    {todo.dueDate
+                                      ? `Due: ${todo.dueDate}`
+                                      : "No deadline"}
                                   </div>
                                   {filter === "all" && (
-                                    <div className="badge badge-outline badge-primary">
-                                      Drag to reorder
+                                    <div className="badge badge-sm badge-outline badge-primary">
+                                      Drag
                                     </div>
                                   )}
                                 </div>
@@ -416,43 +429,48 @@ export default function Home() {
                             <button
                               type="button"
                               onClick={() => startEditing(todo)}
-                              className="btn btn-outline btn-info"
+                              className="btn btn-sm btn-outline btn-info"
                             >
                               Edit
                             </button>
                             <button
                               type="button"
                               onClick={() => removeTodo(todo.id)}
-                              className="btn btn-outline btn-error"
+                              className="btn btn-sm btn-outline btn-error"
                             >
                               Delete
                             </button>
                           </div>
                         </div>
 
-                        <div className="grid gap-3 md:grid-cols-2">
+                        <div className="grid gap-2 md:grid-cols-2">
                           <label className="form-control w-full">
-                            <div className="label">
-                              <span className="label-text">Deadline</span>
+                            <div className="label py-1">
+                              <span className="label-text text-xs">Deadline</span>
                             </div>
                             <input
                               type="date"
                               value={todo.dueDate ?? ""}
-                              onChange={(event) => updateDueDate(todo.id, event.target.value)}
-                              className="input input-bordered w-full"
+                              onChange={(event) =>
+                                updateDueDate(todo.id, event.target.value)
+                              }
+                              className="input input-bordered input-sm w-full"
                             />
                           </label>
 
                           <label className="form-control w-full">
-                            <div className="label">
-                              <span className="label-text">Priority</span>
+                            <div className="label py-1">
+                              <span className="label-text text-xs">Priority</span>
                             </div>
                             <select
                               value={todo.priority ?? "medium"}
                               onChange={(event) =>
-                                updatePriority(todo.id, event.target.value as Priority)
+                                updatePriority(
+                                  todo.id,
+                                  event.target.value as Priority,
+                                )
                               }
-                              className="select select-bordered w-full"
+                              className="select select-bordered select-sm w-full"
                             >
                               {priorities.map((item) => (
                                 <option key={item} value={item}>
