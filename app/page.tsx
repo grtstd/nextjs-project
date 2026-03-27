@@ -8,15 +8,20 @@ type Todo = {
   done: boolean;
 };
 
+type Filter = "all" | "active" | "completed";
+
 const initialTodos: Todo[] = [
   { id: 1, text: "Finish the Next.js todo site", done: true },
   { id: 2, text: "Add a new task", done: false },
   { id: 3, text: "Mark tasks as complete", done: false },
 ];
 
+const filters: Filter[] = ["all", "active", "completed"];
+
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
   const [input, setInput] = useState("");
+  const [filter, setFilter] = useState<Filter>("all");
 
   const stats = useMemo(() => {
     const done = todos.filter((todo) => todo.done).length;
@@ -26,6 +31,12 @@ export default function Home() {
       left: todos.length - done,
     };
   }, [todos]);
+
+  const visibleTodos = useMemo(() => {
+    if (filter === "active") return todos.filter((todo) => !todo.done);
+    if (filter === "completed") return todos.filter((todo) => todo.done);
+    return todos;
+  }, [todos, filter]);
 
   function addTodo(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -54,6 +65,10 @@ export default function Home() {
 
   function removeTodo(id: number) {
     setTodos((current) => current.filter((todo) => todo.id !== id));
+  }
+
+  function clearCompleted() {
+    setTodos((current) => current.filter((todo) => !todo.done));
   }
 
   return (
@@ -112,46 +127,84 @@ export default function Home() {
           </form>
         </section>
 
-        <section className="flex flex-col gap-4">
-          {todos.map((todo) => (
-            <article
-              key={todo.id}
-              className="flex items-center gap-4 rounded-[28px] border border-white/10 bg-white/10 p-5 shadow-lg shadow-black/20 backdrop-blur-md"
+        <section className="flex flex-col gap-4 rounded-[32px] border border-white/10 bg-slate-950/50 p-5 shadow-xl shadow-black/20 backdrop-blur-md">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-wrap gap-2">
+              {filters.map((item) => {
+                const active = filter === item;
+                return (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => setFilter(item)}
+                    className={`rounded-full px-4 py-2 text-sm font-medium capitalize transition ${
+                      active
+                        ? "bg-cyan-400 text-slate-950"
+                        : "bg-white/5 text-slate-300 hover:bg-white/10"
+                    }`}
+                  >
+                    {item}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              onClick={clearCompleted}
+              className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-red-400 hover:text-red-300"
             >
-              <button
-                type="button"
-                aria-label={`Toggle ${todo.text}`}
-                onClick={() => toggleTodo(todo.id)}
-                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${
-                  todo.done
-                    ? "border-emerald-300 bg-emerald-300 text-slate-950"
-                    : "border-slate-500 bg-transparent text-transparent"
-                }`}
-              >
-                ✓
-              </button>
+              Clear completed
+            </button>
+          </div>
 
-              <div className="flex-1">
-                <p
-                  className={`text-lg transition ${
-                    todo.done
-                      ? "text-slate-400 line-through"
-                      : "text-white"
-                  }`}
-                >
-                  {todo.text}
-                </p>
+          <div className="flex flex-col gap-4">
+            {visibleTodos.length === 0 ? (
+              <div className="rounded-[28px] border border-dashed border-white/10 bg-white/5 p-8 text-center text-slate-400">
+                No tasks in this view.
               </div>
+            ) : (
+              visibleTodos.map((todo) => (
+                <article
+                  key={todo.id}
+                  className="flex items-center gap-4 rounded-[28px] border border-white/10 bg-white/10 p-5 shadow-lg shadow-black/20 backdrop-blur-md"
+                >
+                  <button
+                    type="button"
+                    aria-label={`Toggle ${todo.text}`}
+                    onClick={() => toggleTodo(todo.id)}
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${
+                      todo.done
+                        ? "border-emerald-300 bg-emerald-300 text-slate-950"
+                        : "border-slate-500 bg-transparent text-transparent"
+                    }`}
+                  >
+                    ✓
+                  </button>
 
-              <button
-                type="button"
-                onClick={() => removeTodo(todo.id)}
-                className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-red-400 hover:text-red-300"
-              >
-                Delete
-              </button>
-            </article>
-          ))}
+                  <div className="flex-1">
+                    <p
+                      className={`text-lg transition ${
+                        todo.done
+                          ? "text-slate-400 line-through"
+                          : "text-white"
+                      }`}
+                    >
+                      {todo.text}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => removeTodo(todo.id)}
+                    className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-red-400 hover:text-red-300"
+                  >
+                    Delete
+                  </button>
+                </article>
+              ))
+            )}
+          </div>
         </section>
       </div>
     </main>
