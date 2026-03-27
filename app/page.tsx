@@ -437,7 +437,7 @@ export default function Home() {
                             </div>
                             <input
                               type="date"
-                              value={todo.dueDate}
+                              value={todo.dueDate ?? ""}
                               onChange={(event) => updateDueDate(todo.id, event.target.value)}
                               className="input input-bordered w-full"
                             />
@@ -448,7 +448,7 @@ export default function Home() {
                               <span className="label-text">Priority</span>
                             </div>
                             <select
-                              value={todo.priority}
+                              value={todo.priority ?? "medium"}
                               onChange={(event) =>
                                 updatePriority(todo.id, event.target.value as Priority)
                               }
