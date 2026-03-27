@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
 type Todo = {
   id: number;
@@ -17,11 +17,35 @@ const initialTodos: Todo[] = [
 ];
 
 const filters: Filter[] = ["all", "active", "completed"];
+const STORAGE_KEY = "nextjs-todo-items";
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
   const [input, setInput] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as Todo[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setTodos(parsed);
+        }
+      }
+    } catch {
+      // ignore localStorage/JSON errors
+    } finally {
+      setIsReady(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isReady) return;
+
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+  }, [todos, isReady]);
 
   const stats = useMemo(() => {
     const done = todos.filter((todo) => todo.done).length;
@@ -125,6 +149,9 @@ export default function Home() {
               Add todo
             </button>
           </form>
+          <p className="mt-3 text-sm text-slate-400">
+            Your tasks are saved in the browser automatically.
+          </p>
         </section>
 
         <section className="flex flex-col gap-4 rounded-[32px] border border-white/10 bg-slate-950/50 p-5 shadow-xl shadow-black/20 backdrop-blur-md">
